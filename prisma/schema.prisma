@@ -14,36 +14,42 @@ datasource db {
 }
 
 model Board {
-  id        String   @id @default(uuid())
-  title     String
-  columns   Column[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id           String   @id @default(cuid())
+  title        String
+  color        String   @default("#FFFFFF")
+  columns      Column[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  lastModified BigInt   @default(0)
 }
 
 model Column {
-  id      String @id @default(uuid())
-  title   String
-  order   Int
-  boardId String
-  board   Board  @relation(fields: [boardId], references: [id])
-  cards   Card[]
+  id           String @id @default(uuid())
+  title        String
+  order        Int
+  boardId      String
+  board        Board  @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  cards        Card[] @relation("ColumnToCard")
+  lastModified BigInt @default(0)
 }
 
 model Card {
-  id          String  @id @default(uuid())
-  title       String
-  description String?
-  order       Int
-  columnId    String
-  column      Column  @relation(fields: [columnId], references: [id])
-  labels      Label[]
+  id           String    @id @default(cuid())
+  title        String
+  description  String?
+  dueDate      DateTime?
+  labels       Label[]
+  column       Column    @relation("ColumnToCard", fields: [columnId], references: [id], onDelete: Cascade)
+  columnId     String
+  order        Int
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  lastModified BigInt    @default(0)
 }
 
 model Label {
-  id     String @id @default(uuid())
-  name   String
-  color  String
-  cardId String
-  card   Card   @relation(fields: [cardId], references: [id])
+  id    String @id @default(cuid())
+  name  String
+  color String
+  cards Card[]
 }

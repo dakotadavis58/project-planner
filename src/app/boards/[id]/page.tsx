@@ -1,33 +1,29 @@
 import { getBoard } from "@/app/lib/actions/board.actions";
-import { Column } from "@/app/components/board/Column";
-import { AddColumn } from "@/app/components/board/AddColumn";
+import { BoardContent } from "@/app/components/board/BoardContent";
+import { BoardSettings } from "@/app/components/board/BoardSettings";
+import { BoardProvider } from "@/app/providers/BoardProvider";
 
+// params are async
 interface BoardPageProps {
-  params: {
-    id: string;
-  };
-}
-
-async function getBoardData(id: string) {
-  const board = await getBoard(id);
-  if (!board) {
-    throw new Error("Board not found");
-  }
-  return board;
+  params: Promise<{ id: string }>;
 }
 
 export default async function BoardPage({ params }: BoardPageProps) {
-  const board = await getBoardData(params.id);
+  const { id } = await params;
+  const board = await getBoard(id);
+
+  if (!board) {
+    return <div>Board not found</div>;
+  }
 
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">{board.title}</h1>
-      <div className="flex space-x-4 overflow-x-auto">
-        {board.columns.map((column) => (
-          <Column key={column.id} {...column} />
-        ))}
-        <AddColumn boardId={board.id} />
+    <BoardProvider initialBoard={board}>
+      <div className="p-4" style={{ backgroundColor: board.color }}>
+        <BoardSettings />
+        <div className="mt-4">
+          <BoardContent />
+        </div>
       </div>
-    </div>
+    </BoardProvider>
   );
 }

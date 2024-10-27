@@ -1,28 +1,20 @@
-export interface Card {
-  id: string;
-  title: string;
-  description?: string;
-  order: number;
+import {
+  Board as PrismaBoard,
+  Column as PrismaColumn,
+  Card as PrismaCard,
+  Label,
+} from "@prisma/client";
+
+export interface Card extends Omit<PrismaCard, "createdAt" | "updatedAt"> {
   labels: Label[];
 }
 
-export interface Column {
-  id: string;
-  title: string;
-  order: number;
+export interface Column extends Omit<PrismaColumn, "boardId"> {
   cards: Card[];
 }
 
-export interface Board {
-  id: string;
-  title: string;
+export interface Board extends Omit<PrismaBoard, "createdAt" | "updatedAt"> {
   columns: Column[];
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface Label {
-  id: string;
-  name: string;
-  color: string;
+  createdAt: Date;
+  updatedAt: Date;
 }

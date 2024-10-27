@@ -1,15 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import { createColumn } from "../../lib/actions/board.actions";
 
-export function AddColumn({ boardId }: { boardId: string }) {
+interface AddColumnProps {
+  boardId: string;
+  onAddColumn: (title: string) => Promise<void>;
+}
+
+export function AddColumn({ boardId, onAddColumn }: AddColumnProps) {
   const [title, setTitle] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (title.trim()) {
-      await createColumn(boardId, title);
+      await onAddColumn(title);
       setTitle("");
     }
   };
